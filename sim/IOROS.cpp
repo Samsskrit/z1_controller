@@ -89,15 +89,38 @@ void IOROS::_initRecv(){
     _servo_sub[6] = _nm.subscribe("/" + _rname + "_gazebo/gripper_controller/state", 1, &IOROS::_gripperCallback, this);
 
     // new subscriber initializations for trunk_imu and joint_states topics
-    trunk_imu_sub = _nm.subscribe("/trunk_imu", 1, &IOROS::_trunkImuCallback, this);
-    z1_joint_states_sub = _nm.subscribe("/z1_gazebo/joint_states", 1, &IOROS::_z1JointStatesCallback, this);
+    _trunk_imu_sub = _nm.subscribe("/trunk_imu", 1, &IOROS::_trunkImuCallback, this);
+    _robot_joint_states_sub = _nm.subscribe("/aliengoZ1" + "_gazebo/joint_states", 1, &IOROS::_robotJointStatesCallback, this);
+
+    // Initialize transform listener
+    _tf_listener = new tf::TransformListener();
+    _tf_broadcaster = new tf::TransformBroadcaster();
 }
 
 void IOROS::_trunkImuCallback(const unitree_legged_msgs::IMU& msg){
-
+    _trunk_imu.quaternion = msg.quaternion;
+    _trunk_imu.gyroscope = msg.gyroscope;
+    _trunk_imu.accelerometer = msg.accelerometer;
+    _trunk_imu.rpy = msg.rpy;
 }
 
-void IOROS::_z1JointStatesCallback(const unitree_legged_msgs::MotorState& msg){
+/**
+ * Figure out what type of unitree_legged_msgs this is. I put Cartesian for now
+ * since it is easier for the tf calcsbut it is most likely MotorState. 
+*/
+void IOROS::_robotJointStatesCallback(const unitree_legged_msgs::MotorState& msg){
+    // placeholder joint states
+    _robot_joint_states.x = msg.x
+    _robot_joint_states.y = msg.y
+    _robot_joint_states.z = msg.z
+
+    tf::Transform transform;
+    // Set translation and rotation components of transform based on calculations
+    transform.setOrigin(tf::Vector3(0, 0, 0));
+    transform.setRotation(tf::Quaternion(_trunk_imu.quaternion[0], _trunk_imu.quaternion[1], _trunk_imu.quaternion[2], _trunk_imu.quaternion[3]));
+
+    // Publish the transform
+    tf_broadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", _rname + "/base_link"));
 
 }
 
