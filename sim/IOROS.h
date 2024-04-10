@@ -16,6 +16,8 @@ private:
     std::string _rname; // robot_name retrieved from ROS parameter server
     ros::Subscriber _servo_sub[7];
     ros::Publisher _servo_pub[7];
+    ros::Subscriber trunk_imu_sub;
+    ros::Subscriber z1_joint_states_sub;
     unitree_legged_msgs::MotorState _joint_state[7];
     unitree_legged_msgs::MotorCmd _joint_cmd[7];
     void _sendCmd(const LowlevelCmd *cmd);
@@ -30,6 +32,8 @@ private:
     void _joint04Callback(const unitree_legged_msgs::MotorState& msg);
     void _joint05Callback(const unitree_legged_msgs::MotorState& msg);
     void _gripperCallback(const unitree_legged_msgs::MotorState& msg);
+    void _trunkImuCallback(const unitree_legged_msgs::IMU& msg);
+    void _z1JointStatesCallback(const unitree_legged_msgs::MotorState& msg);
 };
 
 #endif  // IOROS_H

@@ -87,6 +87,18 @@ void IOROS::_initRecv(){
     _servo_sub[4] = _nm.subscribe("/" + _rname + "_gazebo/Joint05_controller/state", 1, &IOROS::_joint04Callback, this);
     _servo_sub[5] = _nm.subscribe("/" + _rname + "_gazebo/Joint06_controller/state", 1, &IOROS::_joint05Callback, this);
     _servo_sub[6] = _nm.subscribe("/" + _rname + "_gazebo/gripper_controller/state", 1, &IOROS::_gripperCallback, this);
+
+    // new subscriber initializations for trunk_imu and joint_states topics
+    trunk_imu_sub = _nm.subscribe("/trunk_imu", 1, &IOROS::_trunkImuCallback, this);
+    z1_joint_states_sub = _nm.subscribe("/z1_gazebo/joint_states", 1, &IOROS::_z1JointStatesCallback, this);
+}
+
+void IOROS::_trunkImuCallback(const unitree_legged_msgs::IMU& msg){
+
+}
+
+void IOROS::_z1JointStatesCallback(const unitree_legged_msgs::MotorState& msg){
+
 }
 
 void IOROS::_joint00Callback(const unitree_legged_msgs::MotorState& msg){
